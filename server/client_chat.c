@@ -9,12 +9,24 @@
 #include "client_chat.h"
 
 // Function designed for chat between client and server.
-void chat_with_client(struct sockaddr_in *servaddr, int sockfd)
+void chat_with_client(struct sockaddr_in *servaddr, int listenfd)
 {
+	int pid;
+
 	for (;;) {
-		int connfd = accept_connection(servaddr, sockfd);
-		handle_msg(connfd);		
-		printf("Closing client descriptor: %d\n", connfd);
+		int connfd = accept_connection(servaddr, listenfd);
+
+		pid = fork();
+
+		if (pid == CHILD_PID) {
+			close(listenfd);
+			handle_msg(connfd);	
+			printf("Child process is closing client descriptor: %d\n", connfd);
+			close(connfd);
+			exit(EXIT_SUCCESS);
+		}
+			
+		printf("Parent process is closing client descriptor: %d\n", connfd);
 		close(connfd);
 	}
 }
@@ -49,21 +61,4 @@ void echo_response(char *buffer) {
 			buffer[i] = '_';
 		}
 	}
-}
-
-int accept_connection(struct sockaddr_in *servaddr, int sockfd) {
-	socklen_t len = sizeof(*servaddr);
-	int connfd = accept(sockfd, (SA*)servaddr, &len);
-
-	if (connfd < 0) {
-		printf("server acccept failed...\n");
-		exit(0);
-	} else {
-		printf("server acccept the client...\n");
-		printf("Client's FD: %d\n", connfd);
-		printf("IP: %s\n", inet_ntoa(servaddr->sin_addr));
-		printf("PORT: %d\n", htons(servaddr->sin_port));
-	}
-
-	return connfd;
 }

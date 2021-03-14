@@ -1,7 +1,7 @@
 #ifndef client_h
 #define client_h
 
-#define PORT 8080
+#define PORT 9999
 #define SA struct sockaddr
 #define HOME "127.0.0.1"
 

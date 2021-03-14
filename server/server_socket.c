@@ -44,4 +44,19 @@ void listen_on_socket(int sockfd) {
     }
 }
 
+int accept_connection(struct sockaddr_in *servaddr, int listenfd) {
+    socklen_t len = sizeof(*servaddr);
+    int connfd = accept(listenfd, (SA*)servaddr, &len);
 
+    if (connfd < 0) {
+        printf("server acccept failed...\n");
+        exit(0);
+    } else {
+        printf("server acccept the client...\n");
+        printf("Client's FD: %d\n", connfd);
+        printf("IP: %s\n", inet_ntoa(servaddr->sin_addr));
+        printf("PORT: %d\n", htons(servaddr->sin_port));
+    }
+
+    return connfd;
+}
