@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/wait.h>
 
 #include "server_socket.h"
 
@@ -59,4 +60,15 @@ int accept_connection(struct sockaddr_in *servaddr, int listenfd) {
     }
 
     return connfd;
+}
+
+void sig_chld(int signo) {
+    pid_t pid;
+    int stat;
+
+    while ((pid = waitpid(-1, &stat, WNOHANG)) > 0) {
+        printf("Child process with pid [%d] has been terminated.\n", pid);
+    }
+
+    return;
 }

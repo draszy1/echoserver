@@ -10,5 +10,6 @@ void init_socket(struct sockaddr_in *servaddr, int);
 int create_socket(void);
 void listen_on_socket(int sockfd);
 int accept_connection(struct sockaddr_in *servaddr, int listenfd);
+void sig_chld();
 
 #endif /* server_h */
